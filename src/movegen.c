@@ -6,6 +6,7 @@
 
 #define STARTER_RANK_WHITES 1
 #define STARTER_RANK_BLACKS 6
+#define POSSIBLE_HORSE_MOVES 8
 
 BitBoard getPawnMoves(const bool isWhite, const Position position,
                       const BitBoard *otherPieces) {
@@ -57,4 +58,70 @@ BitBoard getPawnKills(const bool isWhite, const Position position,
   }
 
   return kills;
+}
+
+// To get the kills, you can just `and` the legal moves with the rival's board
+BitBoard getKnightMoves(const bool isWhite, const Position position) {
+  BitBoard legalMoves = 0;
+  const Position allMoves[POSSIBLE_HORSE_MOVES] = {
+      // Top Left
+      (Position){
+          .rank = position.rank + 2,
+          .file = position.file - 1,
+      },
+
+      // Top right
+      (Position){
+          .rank = position.rank + 2,
+          .file = position.file + 1,
+      },
+
+      // Bottom left
+      (Position){
+          .rank = position.rank - 2,
+          .file = position.file - 1,
+      },
+
+      // Bottom right
+      (Position){
+          .rank = position.rank - 2,
+          .file = position.file + 1,
+      },
+
+      // Left top
+      (Position){
+          .rank = position.rank + 1,
+          .file = position.file - 2,
+      },
+
+      // Left bottom
+      (Position){
+          .rank = position.rank - 1,
+          .file = position.file - 2,
+      },
+
+      // Right top
+      (Position){
+          .rank = position.rank + 1,
+          .file = position.file + 2,
+      },
+
+      // Right bottom
+      (Position){
+          .rank = position.rank - 1,
+          .file = position.file + 2,
+      },
+  };
+
+  for (uint8_t i = 0; i < POSSIBLE_HORSE_MOVES; i++) {
+    const bool isOutsideOfBoard = allMoves[i].rank < 0 ||
+                                  allMoves[i].rank > 7 ||
+                                  allMoves[i].file < 0 || allMoves[i].file > 7;
+    if (isOutsideOfBoard)
+      continue;
+
+    setPiece(&legalMoves, allMoves[i], false);
+  }
+
+  return legalMoves;
 }

@@ -3,6 +3,7 @@ A small chess engine made in C, because I don't know any other language (I just 
 
 # Features
 - [X] Bit board representation
+- [ ] Chess board debug tools
 - [ ] Calculate the piece moves
 - [ ] Evaluation function
 - [ ] Mini-Max function with Alpha-Beta pruning
