@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define BOARD_LENGTH 8
 #define PIECE_TYPES 6
@@ -39,4 +40,49 @@ void setPiece(BitBoard *board, const Position position, const bool clear) {
     *board &= ~(1 << square); // Clear the bit
   else
     *board |= 1 << square; // Set the bit
+}
+
+// Debug utility to print a bitboard as an 8x8 grid
+void printBitBoard(const BitBoard board) {
+  printf("  a b c d e f g h\n");
+  for (int rank = 7; rank >= 0; rank--) {
+    printf("%d ", rank + 1);
+    for (int file = 0; file < 8; file++) {
+      Position pos = {.rank = rank, .file = file};
+      bool isSet = (board >> (rank * BOARD_LENGTH + file)) & 1;
+      printf("%c ", isSet ? '1' : '.');
+    }
+    printf("%d\n", rank + 1);
+  }
+  printf("  a b c d e f g h\n");
+  printf("BitBoard value: 0x%016llx\n", (unsigned long long)board);
+}
+
+// Function to get all set positions from a bitboard
+size_t getBitBoardPositions(const BitBoard board, Position *positions,
+                            size_t maxCount) {
+  size_t count = 0;
+  for (int rank = 0; rank < BOARD_LENGTH; rank++) {
+    for (int file = 0; file < BOARD_LENGTH; file++) {
+      if ((board >> (rank * BOARD_LENGTH + file)) & 1) {
+        if (count < maxCount) {
+          positions[count].rank = rank;
+          positions[count].file = file;
+          count++;
+        }
+      }
+    }
+  }
+  return count;
+}
+
+// Get number of pieces on the board
+uint8_t popCount(BitBoard board) {
+  uint8_t count = 0;
+  while (board) {
+    count++;
+    board &= (board - 1); // Clear the least significant bit set
+  }
+
+  return count;
 }
