@@ -7,7 +7,7 @@ FORMATTER = clang-format
 # Source files and output
 SRC = src/main.c
 OBJ = $(SRC:.c=.o)
-TARGET = /build/chessEngine
+TARGET = chessEngine
 
 # Build directory
 BUILD_DIR = build
