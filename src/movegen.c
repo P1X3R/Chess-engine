@@ -61,66 +61,42 @@ BitBoard getPawnKills(const bool isWhite, const Position position,
 }
 
 // To get the kills, you can just `and` the legal moves with the rival's board
-BitBoard getKnightMoves(const bool isWhite, const Position position) {
+BitBoard getKnightMoves(const Position position) {
   BitBoard legalMoves = 0;
-  const Position allMoves[POSSIBLE_HORSE_MOVES] = {
+  const Position possibleMoves[POSSIBLE_HORSE_MOVES] = {
       // Top Left
-      (Position){
-          .rank = position.rank + 2,
-          .file = position.file - 1,
-      },
+      (Position){.rank = position.rank + 2, .file = position.file - 1},
 
       // Top right
-      (Position){
-          .rank = position.rank + 2,
-          .file = position.file + 1,
-      },
+      (Position){.rank = position.rank + 2, .file = position.file + 1},
 
       // Bottom left
-      (Position){
-          .rank = position.rank - 2,
-          .file = position.file - 1,
-      },
+      (Position){.rank = position.rank - 2, .file = position.file - 1},
 
       // Bottom right
-      (Position){
-          .rank = position.rank - 2,
-          .file = position.file + 1,
-      },
+      (Position){.rank = position.rank - 2, .file = position.file + 1},
 
       // Left top
-      (Position){
-          .rank = position.rank + 1,
-          .file = position.file - 2,
-      },
+      (Position){.rank = position.rank + 1, .file = position.file - 2},
 
       // Left bottom
-      (Position){
-          .rank = position.rank - 1,
-          .file = position.file - 2,
-      },
+      (Position){.rank = position.rank - 1, .file = position.file - 2},
 
       // Right top
-      (Position){
-          .rank = position.rank + 1,
-          .file = position.file + 2,
-      },
+      (Position){.rank = position.rank + 1, .file = position.file + 2},
 
       // Right bottom
-      (Position){
-          .rank = position.rank - 1,
-          .file = position.file + 2,
-      },
+      (Position){.rank = position.rank - 1, .file = position.file + 2},
   };
 
   for (uint8_t i = 0; i < POSSIBLE_HORSE_MOVES; i++) {
-    const bool isOutsideOfBoard = allMoves[i].rank < 0 ||
-                                  allMoves[i].rank > 7 ||
-                                  allMoves[i].file < 0 || allMoves[i].file > 7;
+    const bool isOutsideOfBoard =
+        possibleMoves[i].rank < 0 || possibleMoves[i].rank > 7 ||
+        possibleMoves[i].file < 0 || possibleMoves[i].file > 7;
     if (isOutsideOfBoard)
       continue;
 
-    setPiece(&legalMoves, allMoves[i], false);
+    setPiece(&legalMoves, possibleMoves[i], false);
   }
 
   return legalMoves;
