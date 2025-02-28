@@ -9,18 +9,11 @@ SRC = src/main.c
 OBJ = $(SRC:.c=.o)
 TARGET = chessEngine
 
-# Build directory
-BUILD_DIR = build
-
 # Format configuration
 FORMAT_CONFIG = .clang-format
 
 # Default target
-all: $(BUILD_DIR) $(TARGET)
-
-# Create build directory
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+all: $(TARGET)
 
 # Build target
 $(TARGET): $(OBJ)
@@ -44,7 +37,7 @@ format:
 
 # Clean up build artifacts
 clean:
-	rm -rf $(BUILD_DIR) $(TARGET) $(OBJ)
+	rm -rf $(TARGET) $(OBJ)
 
 help:
 	@echo "Makefile commands:"
