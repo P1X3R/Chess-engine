@@ -126,29 +126,38 @@ BitBoard getKnightMoves(const Position position) {
 }
 
 /**
- * Generates a BitBoard representing the legal moves for a bishop.
+ * Generates a BitBoard representing the legal moves for a bishop and a rook.
  *
- * @param position       The current position of the bishop.
+ * @param position       The current position of the bishop or rook.
+ * @param isRook         Get the rook moves instead of bishop.
  * @param friendlyPieces A BitBoard representing the positions of friendly
  * pieces.
  * @param opponentPieces A BitBoard representing the positions of opponent
  * pieces.
- * @return               A BitBoard representing the legal moves of the bishop.
+ * @return               A BitBoard representing the legal moves of the bishop
+ * or rook.
  */
-BitBoard generateBishopMoves(const Position bishopPosition,
-                             const BitBoard *friendlyPieces,
-                             const BitBoard *opponentPieces) {
+BitBoard getSlidingMoves(const Position position, const bool isRook,
+                         const BitBoard *friendlyPieces,
+                         const BitBoard *opponentPieces) {
   BitBoard legalMoves = 0;
 
   // Iterate through possible move distances
   for (uint8_t distance = 1; distance < BOARD_LENGTH; distance++) {
     // Define possible move offsets for each diagonal direction
-    const Position moveOffsets[BISHOP_DIRECTIONS] = {
+    Position moveOffsets[BISHOP_DIRECTIONS] = {
         {-distance, -distance}, // Up-left
         {distance, -distance},  // Down-left
         {-distance, distance},  // Up-right
-        {distance, distance}    // Down-right
+        {distance, distance},   // Down-right
     };
+
+    if (isRook) {
+      moveOffsets[0] = (Position){distance, 0};  // Up
+      moveOffsets[1] = (Position){-distance, 0}; // Down
+      moveOffsets[2] = (Position){0, distance};  // Left
+      moveOffsets[3] = (Position){0, -distance}; // Right
+    }
 
     // Track if a direction is blocked
     bool directionBlocked[BISHOP_DIRECTIONS] = {false, false, false, false};
@@ -157,8 +166,8 @@ BitBoard generateBishopMoves(const Position bishopPosition,
     for (uint8_t direction = 0; direction < BISHOP_DIRECTIONS; direction++) {
       // Calculate the target position
       const Position targetPosition = {
-          bishopPosition.rank + moveOffsets[direction].rank,
-          bishopPosition.file + moveOffsets[direction].file};
+          position.rank + moveOffsets[direction].rank,
+          position.file + moveOffsets[direction].file};
 
       // Check if the target position is within the board boundaries
       const bool isOutsideBoard = targetPosition.rank >= BOARD_LENGTH ||
@@ -174,22 +183,36 @@ BitBoard generateBishopMoves(const Position bishopPosition,
 
       // If the target position is outside the board or occupied by a friendly
       // piece, block the direction
-      if (isOutsideBoard || isFriendlyPiece) {
+      if (isOutsideBoard || isFriendlyPiece)
         directionBlocked[direction] = true;
-      }
 
       // If the direction is not blocked, set the target square as a legal move
-      if (!directionBlocked[direction]) {
+      if (!directionBlocked[direction])
         setPiece(&legalMoves, targetPosition, true);
-      }
 
       // If the target square is occupied by an opponent piece, block the
       // direction (capture)
-      if (isOpponentPiece) {
+      if (isOpponentPiece)
         directionBlocked[direction] = true;
-      }
     }
   }
 
   return legalMoves;
+}
+
+/**
+ * Generates a BitBoard representing the legal moves for a queen.
+ *
+ * @param position       The current position of the queen.
+ * @param friendlyPieces A BitBoard representing the positions of friendly
+ * pieces.
+ * @param opponentPieces A BitBoard representing the positions of opponent
+ * pieces.
+ * @return               A BitBoard representing the legal moves of the queen.
+ */
+BitBoard getQueenMoves(const Position position, const BitBoard *friendlyPieces,
+                       const BitBoard *opponentPieces) {
+  // Because the queen is the bishop and rook moves combined
+  return getSlidingMoves(position, true, friendlyPieces, opponentPieces) |
+         getSlidingMoves(position, false, friendlyPieces, opponentPieces);
 }
